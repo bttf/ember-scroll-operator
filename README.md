@@ -2,14 +2,14 @@
 
 This ember-cli addon provides two route mixins that will handle scroll preservation and resetting. Read more for details.
 
-## [Theme music](https://www.youtube.com/embed/cA9gUspn6gc)(recommended)
-(Please mentally replace the word 'smooth' with 'scroll'.)
+## [Theme music](https://www.youtube.com/embed/cA9gUspn6gc)
+(Recommended listening; please mentally replace the word 'smooth' with 'scroll'.)
 
 ## ScrollOperatorMixin
 
 This will save the scrolling position of a route. When the route is re-entered, it will automatically scroll to the previously saved position *only if accessed by the browser's forward and back buttons*. Accessing the route via link-to or address bar will not trigger this behavior. This is by design in order to more closely emulate the HTML experience.
 
-```
+```javascript
 import ScrollOperatorMixin from 'ember-scroll-operator/mixins/scroll-operator';
 
 export default Ember.Route.extend(ScrollOperatorMixin, {
@@ -44,7 +44,7 @@ export default Ember.Route.extend(ScrollOperatorMixin, {
 
 A simple mixin to ensure that a route is always scrolled to the top when accessed.
 
-```
+```javascript
 import ResetScrollMixin from 'ember-scroll-operator/mixins/reset-scroll';
 
 export default Ember.Route.extend(ResetScrollMixin, {
