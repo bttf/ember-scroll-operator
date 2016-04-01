@@ -2,7 +2,10 @@
 
 This ember-cli addon provides two route mixins that will handle scroll preservation and resetting. Read more for details.
 
-## [Theme music](https://www.youtube.com/embed/cA9gUspn6gc)
+## Theme Music
+
+https://www.youtube.com/embed/cA9gUspn6gc
+
 (Recommended listening; please mentally replace the word 'smooth' with 'scroll'.)
 
 ## ScrollOperatorMixin
