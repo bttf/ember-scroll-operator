@@ -1,46 +1,58 @@
 import Ember from 'ember';
 
 export default Ember.Mixin.create({
-  scrollingTimeout: 100,
+  _scrollingTimeout: 100,
 
   /**
    * Attach on-scroll handler to window/document. Handler will call _scrollTop
    * on scroll.
    */
   activate() {
-    const onScroll = () => {
-      Ember.run.debounce(this, this._setScrollTop, this.scrollingTimeout);
-    };
-    Ember.$(document).on('touchmove.scrollable', onScroll);
-    Ember.$(window).on('scroll.scrollable', onScroll);
+    this._attachEvents();
   },
 
   /**
    * Detach on-scroll handlers on route exit.
    */
   deactivate() {
-    Ember.$(document).off('.scrollable');
-    Ember.$(window).off('.scrollable');
+    this._detachEvents();
   },
 
   /**
    * On entering route, decide whether we want to resume previous scrolling
-   * position or not based on transition.
+   * position or not based on transition. Also detachEvents to ignore any
+   * scrolling that may happen between now and setupController.
    */
   beforeModel(transition) {
     if (!this._didTransitionViaBackOrForward(transition) && this.controller) {
       this.controller.set('currentPosition', 0);
     }
+    this._detachEvents();
   },
 
   /**
    * Scroll to currentPosition value. Uses run-loop's next helper to ensure it
-   * happens after model hooks have been fully executed.
+   * happens after model hooks have been fully executed. Also re-attachEvents
+   * now to resume watching scroll position.
    */
   setupController(controller) {
     Ember.run.next(null, () => {
       Ember.$(window).scrollTop(controller.getWithDefault('currentPosition', 0));
+      this._attachEvents();
     });
+  },
+
+  _attachEvents() {
+    const onScroll = () => {
+      Ember.run.debounce(this, this._setScrollTop, this._scrollingTimeout);
+    };
+    Ember.$(document).on('touchmove.scrollable', onScroll);
+    Ember.$(window).on('scroll.scrollable', onScroll);
+  },
+
+  _detachEvents() {
+    Ember.$(document).off('.scrollable');
+    Ember.$(window).off('.scrollable');
   },
 
   /**
