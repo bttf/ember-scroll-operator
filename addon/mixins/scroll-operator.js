@@ -9,6 +9,7 @@ export default Ember.Mixin.create({
    */
   activate(...args) {
     this._super(...args);
+
     this._attachEvents();
   },
 
@@ -17,6 +18,7 @@ export default Ember.Mixin.create({
    */
   deactivate(...args) {
     this._super(...args);
+
     this._detachEvents();
   },
 
@@ -26,7 +28,7 @@ export default Ember.Mixin.create({
    * scrolling that may happen between now and setupController.
    */
   beforeModel(...args) {
-    const { transition } = args;
+    const [ transition ] = args;
 
     this._super(...args);
 
@@ -43,7 +45,7 @@ export default Ember.Mixin.create({
    * now to resume watching scroll position.
    */
   setupController(...args) {
-    const { controller }  = args;
+    const [ controller ] = args;
 
     this._super(...args);
 
