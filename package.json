@@ -1,6 +1,6 @@
 {
   "name": "ember-scroll-operator",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Handle the preservation of scrolling positions when traversing routes via the browser's back and forward buttons.",
   "directories": {
     "doc": "doc",
