@@ -7,14 +7,16 @@ export default Ember.Mixin.create({
    * Attach on-scroll handler to window/document. Handler will call _scrollTop
    * on scroll.
    */
-  activate() {
+  activate(...args) {
+    this._super(...args);
     this._attachEvents();
   },
 
   /**
    * Detach on-scroll handlers on route exit.
    */
-  deactivate() {
+  deactivate(...args) {
+    this._super(...args);
     this._detachEvents();
   },
 
@@ -23,10 +25,15 @@ export default Ember.Mixin.create({
    * position or not based on transition. Also detachEvents to ignore any
    * scrolling that may happen between now and setupController.
    */
-  beforeModel(transition) {
+  beforeModel(...args) {
+    const { transition } = args;
+
+    this._super(...args);
+
     if (!this._didTransitionViaBackOrForward(transition) && this.controller) {
       this.controller.set('currentPosition', 0);
     }
+
     this._detachEvents();
   },
 
@@ -35,11 +42,17 @@ export default Ember.Mixin.create({
    * happens after model hooks have been fully executed. Also re-attachEvents
    * now to resume watching scroll position.
    */
-  setupController(controller) {
-    Ember.run.schedule('afterRender', null, () => {
-      Ember.$(window).scrollTop(controller.getWithDefault('currentPosition', 0));
-      this._attachEvents();
-    });
+  setupController(...args) {
+    const { controller }  = args;
+
+    this._super(...args);
+
+    if (controller) {
+      Ember.run.schedule('afterRender', null, () => {
+        Ember.$(window).scrollTop(controller.getWithDefault('currentPosition', 0));
+        this._attachEvents();
+      });
+    }
   },
 
   _attachEvents() {
