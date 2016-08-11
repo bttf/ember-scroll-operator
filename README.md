@@ -1,5 +1,9 @@
 # ember-scroll-operator
 
+[![npm version](https://badge.fury.io/js/ember-scroll-operator.svg)](http://badge.fury.io/js/ember-scroll-operator)
+[![npm](https://img.shields.io/npm/dm/ember-scroll-operator.svg)]()
+[![Ember Observer Score](http://emberobserver.com/badges/ember-scroll-operator.svg)](http://emberobserver.com/addons/ember-scroll-operator)
+
 This ember-cli addon provides two route mixins that will handle scroll preservation and resetting. Read more for details.
 
 ## Theme Music
