@@ -36,7 +36,7 @@ export default Ember.Mixin.create({
    * now to resume watching scroll position.
    */
   setupController(controller) {
-    Ember.run.next(null, () => {
+    Ember.run.schedule('afterRender', null, () => {
       Ember.$(window).scrollTop(controller.getWithDefault('currentPosition', 0));
       this._attachEvents();
     });
