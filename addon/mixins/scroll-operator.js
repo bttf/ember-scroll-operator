@@ -1,6 +1,7 @@
 import Ember from 'ember';
+const { $, Mixin, run } = Ember;
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   _scrollingTimeout: 100,
 
   /**
@@ -50,8 +51,8 @@ export default Ember.Mixin.create({
     this._super(...args);
 
     if (controller) {
-      Ember.run.schedule('afterRender', null, () => {
-        Ember.$(window).scrollTop(controller.getWithDefault('currentPosition', 0));
+      run.schedule('afterRender', null, () => {
+        $(window).scrollTop(controller.getWithDefault('currentPosition', 0));
         this._attachEvents();
       });
     }
@@ -59,22 +60,10 @@ export default Ember.Mixin.create({
 
   _attachEvents() {
     const onScroll = () => {
-      Ember.run.debounce(this, this._setScrollTop, this._scrollingTimeout);
+      run.debounce(this, this._setScrollTop, this._scrollingTimeout);
     };
-    Ember.$(document).on('touchmove.scrollable', onScroll);
-    Ember.$(window).on('scroll.scrollable', onScroll);
-  },
-
-  _detachEvents() {
-    Ember.$(document).off('.scrollable');
-    Ember.$(window).off('.scrollable');
-  },
-
-  /**
-   * Set currentPosition to $(window).scrollTop value.
-   */
-  _setScrollTop() {
-    this.set('controller.currentPosition', Ember.$(window).scrollTop());
+    $(document).on('touchmove.scrollable', onScroll);
+    $(window).on('scroll.scrollable', onScroll);
   },
 
   /**
@@ -84,4 +73,16 @@ export default Ember.Mixin.create({
   _didTransitionViaBackOrForward(transition) {
     return transition && transition.sequence > 1 && transition.hasOwnProperty('urlMethod');
   },
+
+  _detachEvents() {
+    $(document).off('.scrollable');
+    $(window).off('.scrollable');
+  },
+
+  /**
+   * Set currentPosition to $(window).scrollTop value.
+   */
+  _setScrollTop() {
+    this.set('controller.currentPosition', $(window).scrollTop());
+  }
 });

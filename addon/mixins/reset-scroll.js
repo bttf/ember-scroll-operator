@@ -1,11 +1,12 @@
 import Ember from 'ember';
+const { $, Mixin } = Ember;
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
    * Scroll to top when route is entered.
    */
   activate(...args) {
     this._super(...args);
-    Ember.$(window).scrollTop(0);
-  },
+    $(window).scrollTop(0);
+  }
 });
