@@ -1,8 +1,10 @@
 import Ember from 'ember';
-const { $, Mixin, run } = Ember;
+const { $, inject: { service }, Mixin, run } = Ember;
 
 export default Mixin.create({
   _scrollingTimeout: 100,
+
+  fastboot: service(),
 
   /**
    * Attach on-scroll handler to window/document. Handler will call _scrollTop
@@ -10,8 +12,9 @@ export default Mixin.create({
    */
   activate(...args) {
     this._super(...args);
-
-    this._attachEvents();
+    if (!this.get('fastboot.isFastBoot')) {
+      this._attachEvents();
+    }
   },
 
   /**
@@ -19,8 +22,9 @@ export default Mixin.create({
    */
   deactivate(...args) {
     this._super(...args);
-
-    this._detachEvents();
+    if (!this.get('fastboot.isFastBoot')) {
+      this._detachEvents();
+    }
   },
 
   /**
@@ -33,11 +37,13 @@ export default Mixin.create({
 
     this._super(...args);
 
-    if (!this._didTransitionViaBackOrForward(transition) && this.controller) {
-      this.controller.set('currentPosition', 0);
-    }
+    if (!this.get('fastboot.isFastBoot')) {
+      if (!this._didTransitionViaBackOrForward(transition) && this.controller) {
+        this.controller.set('currentPosition', 0);
+      }
 
-    this._detachEvents();
+      this._detachEvents();
+    }
   },
 
   /**
@@ -50,11 +56,13 @@ export default Mixin.create({
 
     this._super(...args);
 
-    if (controller) {
-      run.schedule('afterRender', null, () => {
-        $(window).scrollTop(controller.getWithDefault('currentPosition', 0));
-        this._attachEvents();
-      });
+    if  (!this.get('fastboot.isFastBoot')) {
+      if (controller) {
+        run.schedule('afterRender', null, () => {
+          $(window).scrollTop(controller.getWithDefault('currentPosition', 0));
+          this._attachEvents();
+        });
+      }
     }
   },
 

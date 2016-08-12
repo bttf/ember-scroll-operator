@@ -1,12 +1,15 @@
 import Ember from 'ember';
-const { $, Mixin } = Ember;
+const { $, inject: { service }, Mixin } = Ember;
 
 export default Mixin.create({
+  fastboot: service(),
   /**
    * Scroll to top when route is entered.
    */
   activate(...args) {
     this._super(...args);
-    $(window).scrollTop(0);
+    if (!this.get('fastboot.isFastBoot')) {
+      $(window).scrollTop(0);
+    }
   }
 });
