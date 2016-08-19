@@ -1,7 +1,13 @@
 import Ember from 'ember';
+import getOwner from 'ember-getowner-polyfill';
+const { $, computed, Mixin, run } = Ember;
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   _scrollingTimeout: 100,
+
+  fastboot: computed(function() {
+    return getOwner(this).lookup('service:fastboot');
+  }),
 
   /**
    * Attach on-scroll handler to window/document. Handler will call _scrollTop
@@ -9,7 +15,6 @@ export default Ember.Mixin.create({
    */
   activate(...args) {
     this._super(...args);
-
     this._attachEvents();
   },
 
@@ -18,7 +23,6 @@ export default Ember.Mixin.create({
    */
   deactivate(...args) {
     this._super(...args);
-
     this._detachEvents();
   },
 
@@ -49,33 +53,30 @@ export default Ember.Mixin.create({
 
     this._super(...args);
 
-    if (controller) {
-      Ember.run.schedule('afterRender', null, () => {
-        Ember.$(window).scrollTop(controller.getWithDefault('currentPosition', 0));
+    if (controller && (!this.get('fastboot') || !this.get('fastboot.isFastBoot'))) {
+      run.schedule('afterRender', null, () => {
+        $(window).scrollTop(controller.getWithDefault('currentPosition', 0));
         this._attachEvents();
       });
     }
   },
 
   _attachEvents() {
-    const onScroll = () => {
-      const scrollPosition = Ember.$(window).scrollTop();
-      Ember.run.debounce(this, this._setScrollTop, scrollPosition, this._scrollingTimeout);
-    };
-    Ember.$(document).on('touchmove.scrollable', onScroll);
-    Ember.$(window).on('scroll.scrollable', onScroll);
+    if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
+      const onScroll = () => {
+          const scrollPosition = $(window).scrollTop();
+        run.debounce(this, this._setScrollTop, scrollPosition, this._scrollingTimeout);
+      };
+      $(document).on('touchmove.scrollable', onScroll);
+      $(window).on('scroll.scrollable', onScroll);
+    }
   },
 
   _detachEvents() {
-    Ember.$(document).off('.scrollable');
-    Ember.$(window).off('.scrollable');
-  },
-
-  /**
-   * Set currentPosition to $(window).scrollTop value.
-   */
-  _setScrollTop(scrollPosition = 0) {
-    this.set('controller.currentPosition', scrollPosition);
+    if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
+      $(document).off('.scrollable');
+      $(window).off('.scrollable');
+    }
   },
 
   /**
@@ -85,4 +86,13 @@ export default Ember.Mixin.create({
   _didTransitionViaBackOrForward(transition) {
     return transition && transition.sequence > 1 && transition.hasOwnProperty('urlMethod');
   },
+
+  /**
+   * Set currentPosition to $(window).scrollTop value.
+   */
+  _setScrollTop(scrollPosition = 0) {
+    if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
+      this.set('controller.currentPosition', scrollPosition);
+    }
+  }
 });
