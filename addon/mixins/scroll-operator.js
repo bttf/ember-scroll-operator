@@ -1,10 +1,13 @@
 import Ember from 'ember';
-const { $, inject: { service }, Mixin, run } = Ember;
+import getOwner from 'ember-getowner-polyfill';
+const { $, computed, Mixin, run } = Ember;
 
 export default Mixin.create({
   _scrollingTimeout: 100,
 
-  fastboot: service(),
+  fastboot: computed(function() {
+    return getOwner(this).lookup('service:fastboot');
+  }),
 
   /**
    * Attach on-scroll handler to window/document. Handler will call _scrollTop
@@ -12,9 +15,7 @@ export default Mixin.create({
    */
   activate(...args) {
     this._super(...args);
-    if (!this.get('fastboot.isFastBoot')) {
-      this._attachEvents();
-    }
+    this._attachEvents();
   },
 
   /**
@@ -22,9 +23,7 @@ export default Mixin.create({
    */
   deactivate(...args) {
     this._super(...args);
-    if (!this.get('fastboot.isFastBoot')) {
-      this._detachEvents();
-    }
+    this._detachEvents();
   },
 
   /**
@@ -37,13 +36,11 @@ export default Mixin.create({
 
     this._super(...args);
 
-    if (!this.get('fastboot.isFastBoot')) {
-      if (!this._didTransitionViaBackOrForward(transition) && this.controller) {
-        this.controller.set('currentPosition', 0);
-      }
-
-      this._detachEvents();
+    if (!this._didTransitionViaBackOrForward(transition) && this.controller) {
+      this.controller.set('currentPosition', 0);
     }
+
+    this._detachEvents();
   },
 
   /**
@@ -56,22 +53,22 @@ export default Mixin.create({
 
     this._super(...args);
 
-    if  (!this.get('fastboot.isFastBoot')) {
-      if (controller) {
-        run.schedule('afterRender', null, () => {
-          $(window).scrollTop(controller.getWithDefault('currentPosition', 0));
-          this._attachEvents();
-        });
-      }
+    if (controller && (!this.get('fastboot') || !this.get('fastboot.isFastBoot'))) {
+      run.schedule('afterRender', null, () => {
+        $(window).scrollTop(controller.getWithDefault('currentPosition', 0));
+        this._attachEvents();
+      });
     }
   },
 
   _attachEvents() {
-    const onScroll = () => {
-      run.debounce(this, this._setScrollTop, this._scrollingTimeout);
-    };
-    $(document).on('touchmove.scrollable', onScroll);
-    $(window).on('scroll.scrollable', onScroll);
+    if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
+      const onScroll = () => {
+        run.debounce(this, this._setScrollTop, this._scrollingTimeout);
+      };
+      $(document).on('touchmove.scrollable', onScroll);
+      $(window).on('scroll.scrollable', onScroll);
+    }
   },
 
   /**
@@ -83,14 +80,18 @@ export default Mixin.create({
   },
 
   _detachEvents() {
-    $(document).off('.scrollable');
-    $(window).off('.scrollable');
+    if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
+      $(document).off('.scrollable');
+      $(window).off('.scrollable');
+    }
   },
 
   /**
    * Set currentPosition to $(window).scrollTop value.
    */
   _setScrollTop() {
-    this.set('controller.currentPosition', $(window).scrollTop());
+    if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
+      this.set('controller.currentPosition', $(window).scrollTop());
+    }
   }
 });
