@@ -64,10 +64,18 @@ export default Mixin.create({
   _attachEvents() {
     if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
       const onScroll = () => {
-        run.debounce(this, this._setScrollTop, this._scrollingTimeout);
+          const scrollPosition = $(window).scrollTop();
+        run.debounce(this, this._setScrollTop, scrollPosition, this._scrollingTimeout);
       };
       $(document).on('touchmove.scrollable', onScroll);
       $(window).on('scroll.scrollable', onScroll);
+    }
+  },
+
+  _detachEvents() {
+    if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
+      $(document).off('.scrollable');
+      $(window).off('.scrollable');
     }
   },
 
@@ -79,19 +87,12 @@ export default Mixin.create({
     return transition && transition.sequence > 1 && transition.hasOwnProperty('urlMethod');
   },
 
-  _detachEvents() {
-    if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
-      $(document).off('.scrollable');
-      $(window).off('.scrollable');
-    }
-  },
-
   /**
    * Set currentPosition to $(window).scrollTop value.
    */
-  _setScrollTop() {
+  _setScrollTop(scrollPosition = 0) {
     if(!this.get('fastboot') || !this.get('fastboot.isFastBoot')) {
-      this.set('controller.currentPosition', $(window).scrollTop());
+      this.set('controller.currentPosition', scrollPosition);
     }
   }
 });
