@@ -59,7 +59,8 @@ export default Ember.Mixin.create({
 
   _attachEvents() {
     const onScroll = () => {
-      Ember.run.debounce(this, this._setScrollTop, this._scrollingTimeout);
+      const scrollPosition = Ember.$(window).scrollTop();
+      Ember.run.debounce(this, this._setScrollTop, scrollPosition, this._scrollingTimeout);
     };
     Ember.$(document).on('touchmove.scrollable', onScroll);
     Ember.$(window).on('scroll.scrollable', onScroll);
@@ -73,8 +74,8 @@ export default Ember.Mixin.create({
   /**
    * Set currentPosition to $(window).scrollTop value.
    */
-  _setScrollTop() {
-    this.set('controller.currentPosition', Ember.$(window).scrollTop());
+  _setScrollTop(scrollPosition = 0) {
+    this.set('controller.currentPosition', scrollPosition);
   },
 
   /**
