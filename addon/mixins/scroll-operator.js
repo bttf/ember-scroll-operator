@@ -1,6 +1,5 @@
 import Ember from 'ember';
-import getOwner from 'ember-getowner-polyfill';
-const { $, computed, Mixin, run } = Ember;
+const { $, computed, getOwner, Mixin, run } = Ember;
 
 export default Mixin.create({
   _scrollingTimeout: 100,
