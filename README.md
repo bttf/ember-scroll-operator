@@ -1,4 +1,4 @@
-# ember-scroll-operator
+# ember-scroll-operator (UNMAINTAINED)
 
 [![npm version](https://badge.fury.io/js/ember-scroll-operator.svg)](http://badge.fury.io/js/ember-scroll-operator)
 [![npm](https://img.shields.io/npm/dm/ember-scroll-operator.svg)]()
